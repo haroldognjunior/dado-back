@@ -55,6 +55,14 @@ export interface ResultadoCobertura {
   observacoes?: string;
 }
 
+export interface ProcedimentoCoberto {
+  tuss_codigo: string;
+  nome: string;
+  tipo: string;
+  plano_codigo: string;
+  plano_nome: string;
+}
+
 // ─── API ──────────────────────────────────────────────────────────────────────
 
 export interface PerguntaRequest {
@@ -77,7 +85,11 @@ export interface EntidadesExtraidas {
 export interface RespostaAPI {
   resposta: string;
   entidades: EntidadesExtraidas;
-  dados: MedicoComCobertura[] | ResultadoCobertura | null;
+  dados:
+    | MedicoComCobertura[]
+    | ResultadoCobertura
+    | ProcedimentoCoberto[]
+    | null;
   grafo: GrafoVisualizacao;
   consulta_id: string;
 }

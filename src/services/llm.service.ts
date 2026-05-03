@@ -1,6 +1,7 @@
 import type {
   EntidadesExtraidas,
   MedicoComCobertura,
+  ProcedimentoCoberto,
   ResultadoCobertura,
 } from "../types/index.js";
 
@@ -164,7 +165,11 @@ function extrairEntidadesPorRegras(pergunta: string): EntidadesExtraidas {
 
 function gerarRespostaPorRegras(
   entidades: EntidadesExtraidas,
-  dados: MedicoComCobertura[] | ResultadoCobertura | null,
+  dados:
+    | MedicoComCobertura[]
+    | ResultadoCobertura
+    | ProcedimentoCoberto[]
+    | null,
 ): string {
   if (entidades.intencao === "buscar_medico") {
     const medicos = dados as MedicoComCobertura[];
@@ -243,7 +248,11 @@ export async function extrairEntidades(
 export async function gerarResposta(
   pergunta: string,
   entidades: EntidadesExtraidas,
-  dados: MedicoComCobertura[] | ResultadoCobertura | null,
+  dados:
+    | MedicoComCobertura[]
+    | ResultadoCobertura
+    | ProcedimentoCoberto[]
+    | null,
 ): Promise<string> {
   if (GROQ_API_KEY) {
     try {

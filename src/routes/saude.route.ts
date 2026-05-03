@@ -4,6 +4,7 @@ import { z } from "zod";
 import { extrairEntidades, gerarResposta } from "../services/llm.service.js";
 import {
   buscarMedicosPorCobertura,
+  listarProcedimentosCobertos,
   verificarCobertura,
 } from "../services/neo4j.service.js";
 import {
@@ -58,6 +59,10 @@ router.post("/perguntar", async (req: Request, res: Response) => {
     } else if (entidades.intencao === "verificar_cobertura") {
       const resultado = await verificarCobertura(cpf, entidades);
       dados = resultado.resultado;
+      grafo = resultado.grafo;
+    } else if (entidades.intencao === "listar_procedimentos") {
+      const resultado = await listarProcedimentosCobertos(cpf);
+      dados = resultado.procedimentos;
       grafo = resultado.grafo;
     }
 
