@@ -30,7 +30,7 @@ async function chamarGroq(system: string, user: string): Promise<string> {
     const err = await res.text();
     throw new Error(`Groq ${res.status}: ${err}`);
   }
-  const data = await res.json();
+  const data = (await res.json()) as any;
   return data.choices?.[0]?.message?.content ?? "";
 }
 

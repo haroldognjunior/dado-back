@@ -1,34 +1,49 @@
-import { MongoClient, Collection, Db } from 'mongodb'
-import type { EntidadesExtraidas, RespostaAPI } from '../types/index.js'
+import { MongoClient, Collection, Db } from "mongodb";
+import type { EntidadesExtraidas, RespostaAPI } from "../types/index.js";
 
-let client: MongoClient
-let db: Db
+let client: MongoClient;
+let db: Db;
+
+type ConsultaDoc = {
+  _id: string;
+  cpf: string;
+  pergunta: string;
+  entidades: EntidadesExtraidas;
+  resposta_texto: string;
+  dados_retornados: any;
+  criado_em: Date;
+  feedback: any;
+};
 
 export async function conectarMongo(): Promise<Db> {
   if (!client) {
-    client = new MongoClient(process.env.MONGODB_URI ?? 'mongodb://localhost:27017')
-    await client.connect()
-    db = client.db(process.env.MONGODB_DB ?? 'saude_grafo')
-    await criarIndices()
+    client = new MongoClient(
+      process.env.MONGODB_URI ?? "mongodb://localhost:27017",
+    );
+    await client.connect();
+    db = client.db(process.env.MONGODB_DB ?? "saude_grafo");
+    await criarIndices();
   }
-  return db
+  return db;
 }
 
 async function criarIndices(): Promise<void> {
-  const col = db.collection('consultas')
-  await col.createIndex({ cpf: 1, criado_em: -1 })
-  await col.createIndex({ 'entidades.intencao': 1 })
+  const col = db.collection("consultas");
+  await col.createIndex({ cpf: 1, criado_em: -1 });
+  await col.createIndex({ "entidades.intencao": 1 });
 }
 
 export async function salvarConsulta(
   cpf: string,
   pergunta: string,
   entidades: EntidadesExtraidas,
-  resposta: RespostaAPI
+  resposta: RespostaAPI,
 ): Promise<string> {
-  const col: Collection = (await conectarMongo()).collection('consultas')
+  const col: Collection<ConsultaDoc> = (
+    await conectarMongo()
+  ).collection<ConsultaDoc>("consultas");
 
-  const doc = {
+  const doc: ConsultaDoc = {
     _id: resposta.consulta_id,
     cpf,
     pergunta,
@@ -37,38 +52,49 @@ export async function salvarConsulta(
     dados_retornados: resposta.dados,
     criado_em: new Date(),
     feedback: null,
-  }
+  };
 
-  await col.insertOne(doc)
-  return resposta.consulta_id
+  await col.insertOne(doc);
+  return resposta.consulta_id;
 }
 
 export async function salvarFeedback(
   consulta_id: string,
   util: boolean,
-  comentario?: string
+  comentario?: string,
 ): Promise<void> {
-  const col: Collection = (await conectarMongo()).collection('consultas')
-
+  const col: Collection<ConsultaDoc> = (
+    await conectarMongo()
+  ).collection<ConsultaDoc>("consultas");
   await col.updateOne(
     { _id: consulta_id },
     {
       $set: {
-        feedback: { util, comentario: comentario ?? null, respondido_em: new Date() },
+        feedback: {
+          util,
+          comentario: comentario ?? null,
+          respondido_em: new Date(),
+        },
       },
-    }
-  )
+    },
+  );
 }
 
 export async function buscarHistorico(
   cpf: string,
-  limite = 10
+  limite = 10,
 ): Promise<{ pergunta: string; resposta_texto: string; criado_em: Date }[]> {
-  const col: Collection = (await conectarMongo()).collection('consultas')
-
+  const col: Collection<ConsultaDoc> = (
+    await conectarMongo()
+  ).collection<ConsultaDoc>("consultas");
   return col
-    .find({ cpf }, { projection: { pergunta: 1, resposta_texto: 1, criado_em: 1 } })
+    .find(
+      { cpf },
+      { projection: { pergunta: 1, resposta_texto: 1, criado_em: 1 } },
+    )
     .sort({ criado_em: -1 })
     .limit(limite)
-    .toArray() as Promise<{ pergunta: string; resposta_texto: string; criado_em: Date }[]>
+    .toArray() as Promise<
+    { pergunta: string; resposta_texto: string; criado_em: Date }[]
+  >;
 }
