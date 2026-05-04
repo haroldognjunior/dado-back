@@ -172,7 +172,7 @@ export async function listarProcedimentosCobertos(cpf: string) {
   try {
     const result = await session.run(
       `
-      MATCH (b:Beneficiario {cpf: $cpf})-[:TEM_PLANO]->(p:Plano)
+      MATCH (b:Beneficiario {cpf: $cpf})-[:POSSUI]->(p:Plano)
       MATCH (p)-[:COBRE]->(proc:Procedimento)
       RETURN 
         p.codigo AS plano_codigo,

@@ -62,6 +62,10 @@ router.post("/perguntar", async (req: Request, res: Response) => {
       grafo = resultado.grafo;
     } else if (entidades.intencao === "listar_procedimentos") {
       const resultado = await listarProcedimentosCobertos(cpf);
+      console.log(
+        "[listar_procedimentos] resultado:",
+        JSON.stringify(resultado, null, 2),
+      );
       dados = resultado.procedimentos;
       grafo = resultado.grafo;
     }
