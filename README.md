@@ -6,7 +6,7 @@ Sistema de navegação de cobertura de plano de saúde com IA e grafos.
 
 - **Frontend**: React + TypeScript + D3.js (visualização do grafo)
 - **Backend**: Node.js + TypeScript + Express
-- **LLM**: Claude API (Anthropic) — extração de entidades + resposta humanizada
+- **LLM**: Groq — extração de entidades + resposta humanizada
 - **Grafo**: Neo4j — relações entre plano, cobertura, médicos, procedimentos
 - **Documentos**: MongoDB — histórico de consultas e feedback
 
@@ -80,13 +80,13 @@ Retorna últimas consultas do beneficiário.
 Pergunta (PT-BR)
     │
     ▼
-Claude API → extrai { intencao, especialidade, cidade, procedimento }
+Groq → extrai { intencao, especialidade, cidade, procedimento }
     │
     ▼
 Neo4j (Cypher) → traversal do grafo de cobertura
     │
     ▼
-Claude API → gera resposta humanizada com os dados reais
+Groq → gera resposta humanizada com os dados reais
     │
     ▼
 MongoDB → persiste para histórico e análise
